@@ -14,7 +14,7 @@ from src.visualizations import build_summary_strip
 # ---------------------------------------------------------------------------
 st.set_page_config(
     page_title="AnalyX",
-    page_icon="📊",
+    page_icon="assets\Image_icon.jpg",
     layout="centered",
 )
 
