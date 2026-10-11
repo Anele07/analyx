@@ -29,7 +29,7 @@ _CSS = """
     }
     .block-container {
         max-width: 860px;
-        padding-top: 1.5rem;
+        padding-top: 4.5rem;
         padding-bottom: 4rem;
     }
     footer { visibility: hidden; }
@@ -60,15 +60,27 @@ _CSS = """
     .stApp [data-baseweb="tab"] {
         font-family: var(--font-body);
         font-weight: 500;
+        color: var(--ink-soft);
+    }
+    .stApp [data-baseweb="tab"][aria-selected="true"] {
+        color: var(--ink);
+    }
+    .stApp [data-baseweb="tab-highlight"] {
+        background-color: var(--ink);
     }
 
     /* ---------- Text area ---------- */
     .stApp textarea {
         background: var(--paper);
+        color: var(--ink);
         border: 1px solid var(--rule);
         border-radius: 6px;
         font-size: 1rem;
         line-height: 1.6;
+    }
+    .stApp textarea::placeholder {
+        color: #6B7480;
+        opacity: 1;
     }
     .stApp textarea:focus {
         border-color: var(--ink);
