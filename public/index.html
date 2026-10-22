@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f3f5f7">
+  <meta name="description" content="Analyze customer feedback and social comments with visual sentiment insights.">
+  <link rel="icon" href="/assets/analyx-logo.jpg" type="image/jpeg">
+  <title>AnalyX — Sentiment intelligence</title>
+  <link rel="stylesheet" href="/styles.css">
+  <script src="/app.js" defer></script>
+</head>
+<body>
+  <main class="page">
+    <header class="ax-header">
+      <h1 class="ax-wordmark">AnalyX</h1>
+      <p class="ax-subtitle">Turn customer feedback and social comments into clear sentiment insights for your business.</p>
+    </header>
+
+    <nav class="tabs" aria-label="Analysis type">
+      <button class="tab is-active" id="single-tab" type="button" role="tab" aria-selected="true" aria-controls="single-panel">Direct text</button>
+      <button class="tab" id="link-tab" type="button" role="tab" aria-selected="false" aria-controls="link-panel">Analyze a link</button>
+      <button class="tab" id="dataset-tab" type="button" role="tab" aria-selected="false" aria-controls="dataset-panel">Import data</button>
+    </nav>
+
+    <section id="single-panel" class="panel" role="tabpanel" aria-labelledby="single-tab">
+      <form id="text-form">
+        <label class="visually-hidden" for="text-input">Text to analyze</label>
+        <textarea id="text-input" name="text" maxlength="10000" placeholder="Paste a review or comment" required></textarea>
+        <div class="actions">
+          <button class="button button-primary" type="submit">Analyze</button>
+          <span id="text-status" class="status" role="status"></span>
+        </div>
+      </form>
+      <div class="examples">
+        <span class="muted">Or try an example</span>
+        <div class="chips">
+          <button class="chip" type="button" data-example="I love this product. It works exactly as described.">Love it</button>
+          <button class="chip" type="button" data-example="Great, it broke in a day.">Sarcasm</button>
+          <button class="chip" type="button" data-example="The battery is excellent, but the screen scratches too easily.">Mixed</button>
+          <button class="chip" type="button" data-example="Support never replied and I still haven't got my refund.">Complaint</button>
+        </div>
+      </div>
+      <div id="single-error" class="error" role="alert" hidden></div>
+      <section id="single-result" class="result" aria-live="polite" hidden></section>
+    </section>
+
+    <section id="link-panel" class="panel" role="tabpanel" aria-labelledby="link-tab" hidden>
+      <p class="muted">Paste a public social post or product-review link to analyze up to 100 available comments or reviews.</p>
+      <form id="link-form">
+        <label for="link-url">Post or product-review link</label>
+        <input id="link-url" name="url" type="url" maxlength="2048" placeholder="Paste a link from a social platform or review site" required>
+        <div class="actions">
+          <button class="button button-primary" type="submit">Check link</button>
+          <span id="link-status" class="status" role="status"></span>
+        </div>
+      </form>
+      <p class="helper-text">YouTube public comments are available when its API is configured. Instagram, Facebook, TikTok, and product-review sources require approved server-side access; availability depends on the platform and the content owner’s permissions.</p>
+      <div id="link-error" class="error" role="alert" hidden></div>
+      <section id="link-result" class="result" aria-live="polite" hidden></section>
+    </section>
+
+    <section id="dataset-panel" class="panel" role="tabpanel" aria-labelledby="dataset-tab" hidden>
+      <p class="muted">Import historical comments or feedback from a CSV, Excel, or PDF file (up to 4 MB).</p>
+      <form id="file-form">
+        <label class="file-picker" for="file-input">
+          <span id="file-name">Choose a CSV, XLSX, or PDF file</span>
+          <input id="file-input" type="file" name="file" accept=".csv,.xlsx,.pdf" required>
+        </label>
+        <div class="actions">
+          <button id="file-submit" class="button button-primary" type="submit">Process file</button>
+          <span id="file-status" class="status" role="status"></span>
+        </div>
+      </form>
+      <div id="file-error" class="error" role="alert" hidden></div>
+      <section id="dataset-result" class="result" aria-live="polite" hidden></section>
+    </section>
+
+    <footer class="footer">Sentiment charts use the multilingual DistilBERT classification; VADER is shown as a second opinion. Comments and reviews are retrieved only where an approved platform integration allows access.</footer>
+  </main>
+</body>
+</html>

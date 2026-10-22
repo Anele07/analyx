@@ -1,12 +1,12 @@
 import pandas as pd
 from pypdf import PdfReader
 
-def extract_text_from_file(uploaded_file):
+def extract_text_from_file(uploaded_file, filename=None):
     """
     Extracts customer reviews/comments from PDF, Excel, or CSV files.
     Returns a pandas DataFrame containing a 'text' column.
     """
-    file_name = uploaded_file.name.lower()
+    file_name = (filename or uploaded_file.name).lower()
     
     if file_name.endswith('.csv'):
         df = pd.read_csv(uploaded_file)
