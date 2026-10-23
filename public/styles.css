@@ -40,10 +40,6 @@ textarea:focus, input:focus-visible, button:focus-visible { outline: 2px solid v
 .button-primary:hover:not(:disabled) { background: #2a313b; }
 .status, .muted { color: var(--ink-soft); font-size: .9rem; }
 .helper-text { max-width: 75ch; color: var(--ink-soft); font-size: .85rem; line-height: 1.55; }
-.examples { margin-top: 1.4rem; }
-.chips { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: .6rem; }
-.chip { border: 1px solid var(--rule); border-radius: 999px; padding: .35rem .75rem; color: var(--ink); background: transparent; }
-.chip:hover { border-color: var(--ink); }
 .error { margin-top: 1rem; padding: .8rem 1rem; border-left: 3px solid var(--negative); color: #8f2e24; background: #fff0ee; }
 .result { margin-top: 1.5rem; animation: ax-in 220ms ease-out; }
 .verdict-row { display: flex; align-items: baseline; flex-wrap: wrap; gap: 1rem; margin: 1.25rem 0 .5rem; }

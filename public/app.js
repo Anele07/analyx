@@ -15,13 +15,6 @@ for (const tab of tabs) {
   });
 }
 
-for (const button of document.querySelectorAll("[data-example]")) {
-  button.addEventListener("click", () => {
-    document.querySelector("#text-input").value = button.dataset.example;
-    document.querySelector("#text-input").focus();
-  });
-}
-
 function showError(target, message) {
   target.textContent = message;
   target.hidden = false;

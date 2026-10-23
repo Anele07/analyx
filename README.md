@@ -9,7 +9,7 @@ Use Python 3.10 or later:
 ```powershell
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
-pip install -r requirements.txt
+pip install -r requirements-local.txt
 uvicorn app:app --reload
 ```
 
@@ -66,6 +66,6 @@ The first analysis downloads the VADER lexicon and DistilBERT model. Allow outbo
 
 Import this repository as a Vercel project and deploy with the default Python/FastAPI settings. Vercel serves `public/` through its CDN and runs the FastAPI app in `app.py`. The included `vercel.json` allows up to 300 seconds for analysis.
 
-The app keeps its existing PyTorch/Transformers models, so check the resulting function bundle against Vercel's Python bundle limit (500 MB by default; larger functions are a Vercel beta feature). The model is downloaded when a function instance first analyzes text, so the first request can be slow and will require outbound access to Hugging Face. Functions are temporary; the model may need to be downloaded again on a cold start. Dataset uploads are limited to 4 MB, and batches are capped at 2,000 rows.
+Vercel uses the Hugging Face hosted inference API to stay within its 500 MB Python function bundle limit, while local and Docker deployments run DistilBERT with PyTorch. Add an `HF_TOKEN` environment variable in Vercel with permission to use Inference Providers. The first inference can be slow while the model starts, and Hugging Face account limits apply. Dataset uploads are limited to 4 MB, and batches are capped at 2,000 rows.
 
-If Vercel cannot build the model dependencies within your account's limits, use the Docker deployment above or deploy the same app to another Python ASGI host. The frontend and API are served together by the app locally and in Docker; Vercel serves the static frontend through its CDN.
+If you prefer to run inference locally rather than use Hugging Face's hosted API, deploy with Docker or another Python ASGI host. The frontend and API are served together by the app locally and in Docker; Vercel serves the static frontend through its CDN.

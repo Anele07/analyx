@@ -1,6 +1,14 @@
+import json
+import os
+from urllib.error import HTTPError, URLError
+from urllib.request import Request, urlopen
+
 import nltk
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
-from transformers import pipeline
+
+
+MODEL_ID = "lxyuan/distilbert-base-multilingual-cased-sentiments-student"
+INFERENCE_URL = f"https://router.huggingface.co/hf-inference/models/{MODEL_ID}"
 
 
 class SentimentEngine:
@@ -11,14 +19,20 @@ class SentimentEngine:
         nltk.download("vader_lexicon", quiet=True)
         self.vader = SentimentIntensityAnalyzer()
 
-        # DistilBERT multilingual student model (3 classes: positive, neutral, negative).
-        # top_k=None returns the score for every class. It replaces the deprecated
-        # return_all_scores=True and gives the same output shape.
-        self.distilbert = pipeline(
-            "sentiment-analysis",
-            model="lxyuan/distilbert-base-multilingual-cased-sentiments-student",
-            top_k=None,
-        )
+        self.huggingface_token = None
+        self.distilbert = None
+        if os.environ.get("VERCEL"):
+            self.huggingface_token = os.environ.get("HF_TOKEN", "").strip()
+            if not self.huggingface_token:
+                raise RuntimeError("HF_TOKEN is required for Vercel inference.")
+        else:
+            from transformers import pipeline
+
+            self.distilbert = pipeline(
+                "sentiment-analysis",
+                model=MODEL_ID,
+                top_k=None,
+            )
 
     def analyze_vader(self, text):
         """Returns (sentiment, compound, raw_scores, reasoning).
@@ -51,7 +65,30 @@ class SentimentEngine:
         scores:    {"positive": 0-1, "neutral": 0-1, "negative": 0-1}
         """
         # Truncate by tokens (not characters) so long texts never exceed the model limit
-        raw_output = self.distilbert(text, truncation=True, max_length=512)
+        if self.huggingface_token:
+            request = Request(
+                INFERENCE_URL,
+                data=json.dumps(
+                    {
+                        "inputs": text,
+                        "parameters": {"truncation": True, "max_length": 512},
+                    }
+                ).encode(),
+                headers={
+                    "Authorization": f"Bearer {self.huggingface_token}",
+                    "Content-Type": "application/json",
+                },
+                method="POST",
+            )
+            try:
+                with urlopen(request, timeout=60) as response:
+                    raw_output = json.loads(response.read())
+            except (HTTPError, URLError) as error:
+                raise RuntimeError(
+                    "Hugging Face inference request failed."
+                ) from error
+        else:
+            raw_output = self.distilbert(text, truncation=True, max_length=512)
 
         # Unnest the list if HuggingFace returned [[{...}, {...}]]
         if isinstance(raw_output, list) and raw_output and isinstance(raw_output[0], list):
