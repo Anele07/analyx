@@ -78,6 +78,28 @@ class ApiTests(unittest.TestCase):
         self.assertEqual(request.get_header("Authorization"), "Bearer test-token")
         self.assertEqual(request.full_url, models.INFERENCE_URL)
 
+    def test_vercel_without_hf_token_still_initializes(self):
+        response = YouTubeResponse(
+            [[
+                {"label": "positive", "score": 0.9},
+                {"label": "neutral", "score": 0.05},
+                {"label": "negative", "score": 0.05},
+            ]]
+        )
+        with (
+            patch.dict(os.environ, {"VERCEL": "1", "HF_TOKEN": ""}, clear=False),
+            patch.object(models.nltk, "download"),
+            patch.object(
+                models, "SentimentIntensityAnalyzer", return_value=SimpleNamespace()
+            ),
+            patch.object(models, "urlopen", return_value=response) as mock_urlopen,
+        ):
+            engine = models.SentimentEngine()
+            result = engine.analyze_distilbert("A very good result")
+
+        self.assertEqual(result[0], "positive")
+        self.assertIsNone(mock_urlopen.call_args.args[0].headers.get("Authorization"))
+
     def test_highlighted_text_uses_supported_vader_negation_constants(self):
         with patch(
             "nltk.sentiment.vader.SentimentIntensityAnalyzer",

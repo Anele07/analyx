@@ -63,10 +63,15 @@ def _get_engine() -> SentimentEngine:
         return load_engine()
     except Exception as error:
         logger.exception("Unable to load the sentiment models")
-        raise HTTPException(
-            status_code=503,
-            detail="The sentiment models could not be loaded. Please try again later.",
-        ) from error
+        message = str(error)
+        if "HF_TOKEN" in message or "Hugging Face inference request failed" in message:
+            detail = (
+                "The deployed model is not configured correctly. Add HF_TOKEN to "
+                "your Vercel environment variables and redeploy."
+            )
+        else:
+            detail = "The sentiment models could not be loaded. Please try again later."
+        raise HTTPException(status_code=503, detail=detail) from error
 
 
 def _analyze_text(

@@ -19,13 +19,9 @@ class SentimentEngine:
         nltk.download("vader_lexicon", quiet=True)
         self.vader = SentimentIntensityAnalyzer()
 
-        self.huggingface_token = None
+        self.huggingface_token = os.environ.get("HF_TOKEN", "").strip()
         self.distilbert = None
-        if os.environ.get("VERCEL"):
-            self.huggingface_token = os.environ.get("HF_TOKEN", "").strip()
-            if not self.huggingface_token:
-                raise RuntimeError("HF_TOKEN is required for Vercel inference.")
-        else:
+        if not os.environ.get("VERCEL"):
             from transformers import pipeline
 
             self.distilbert = pipeline(
@@ -65,7 +61,10 @@ class SentimentEngine:
         scores:    {"positive": 0-1, "neutral": 0-1, "negative": 0-1}
         """
         # Truncate by tokens (not characters) so long texts never exceed the model limit
-        if self.huggingface_token:
+        if os.environ.get("VERCEL"):
+            headers = {"Content-Type": "application/json"}
+            if self.huggingface_token:
+                headers["Authorization"] = f"Bearer {self.huggingface_token}"
             request = Request(
                 INFERENCE_URL,
                 data=json.dumps(
@@ -74,10 +73,7 @@ class SentimentEngine:
                         "parameters": {"truncation": True, "max_length": 512},
                     }
                 ).encode(),
-                headers={
-                    "Authorization": f"Bearer {self.huggingface_token}",
-                    "Content-Type": "application/json",
-                },
+                headers=headers,
                 method="POST",
             )
             try:
