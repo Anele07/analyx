@@ -58,6 +58,12 @@ def load_engine() -> SentimentEngine:
     return SentimentEngine()
 
 
+@app.on_event("startup")
+def warmup_models() -> None:
+    """Load the sentiment engine once during startup to avoid the first-request cold start."""
+    load_engine()
+
+
 def _get_engine() -> SentimentEngine:
     try:
         return load_engine()

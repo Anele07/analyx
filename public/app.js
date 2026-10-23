@@ -95,7 +95,15 @@ document.querySelector("#text-form").addEventListener("submit", async (event) =>
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ text }),
     });
-    const payload = await response.json();
+
+    let payload = {};
+    try {
+      payload = await response.json();
+    } catch {
+      const textPayload = await response.text();
+      payload = textPayload ? { detail: textPayload } : { detail: "Unexpected empty response from the analysis service." };
+    }
+
     if (!response.ok) throw new Error(payload.detail || "Analysis failed. Please try again.");
     renderSingleResult(payload);
   } catch (cause) {

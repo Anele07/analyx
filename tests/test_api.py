@@ -53,6 +53,10 @@ class ApiTests(unittest.TestCase):
         self.assertEqual(self.client.get("/app.js").status_code, 200)
         self.assertEqual(self.client.get("/assets/analyx-logo.jpg").status_code, 200)
 
+    def test_startup_warmup_loads_the_engine(self):
+        startup_handlers = [handler for handler in app.app.router.on_startup]
+        self.assertTrue(any(callable(handler) for handler in startup_handlers))
+
     def test_vercel_sentiment_uses_huggingface_inference(self):
         response = YouTubeResponse(
             [[
