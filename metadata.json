@@ -1,0 +1,6 @@
+{
+  "name": "Analyx — Dual-Model Sentiment Intelligence",
+  "description": "Enterprise dual-model sentiment analysis platform bridging sub-millisecond VADER rule-based lexicon speed with deep RoBERTa transformer contextual intelligence.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
